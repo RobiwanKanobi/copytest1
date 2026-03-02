@@ -1,6 +1,9 @@
 extends RefCounted
 class_name Upgrades
 
+const BalanceData = preload("res://game/data/balance.gd")
+const EconomyUtil = preload("res://game/scripts/economy.gd")
+
 var individual_levels := {
 	"sharpen_blades": 0,
 	"plate_armor": 0,
@@ -24,17 +27,17 @@ func reset() -> void:
 
 
 func get_individual_cost(key: String) -> int:
-	var def: Dictionary = Balance.INDIVIDUAL_UPGRADE_DEFS.get(key, {})
+	var def: Dictionary = BalanceData.INDIVIDUAL_UPGRADE_DEFS.get(key, {})
 	if def.is_empty():
 		return 0
-	return Economy.scaled_cost(float(def.get("base_cost", 0.0)), float(def.get("scaling", 1.0)), int(individual_levels.get(key, 0)))
+	return EconomyUtil.scaled_cost(float(def.get("base_cost", 0.0)), float(def.get("scaling", 1.0)), int(individual_levels.get(key, 0)))
 
 
 func get_global_cost(key: String) -> int:
-	var def: Dictionary = Balance.GLOBAL_UPGRADE_DEFS.get(key, {})
+	var def: Dictionary = BalanceData.GLOBAL_UPGRADE_DEFS.get(key, {})
 	if def.is_empty():
 		return 0
-	return Economy.scaled_cost(float(def.get("base_cost", 0.0)), float(def.get("scaling", 1.0)), int(global_levels.get(key, 0)))
+	return EconomyUtil.scaled_cost(float(def.get("base_cost", 0.0)), float(def.get("scaling", 1.0)), int(global_levels.get(key, 0)))
 
 
 func buy_individual(key: String) -> void:

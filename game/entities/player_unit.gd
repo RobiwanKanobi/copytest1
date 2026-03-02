@@ -47,7 +47,7 @@ func _process(delta: float) -> void:
 		return
 
 	_cooldown_left = maxf(0.0, _cooldown_left - delta)
-	var push := battle.get_player_push(self)
+	var push: Vector2 = battle.get_player_push(self)
 	position += push * delta
 
 	var target = battle.get_nearest_enemy(position, attack_range)

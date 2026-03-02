@@ -1,5 +1,8 @@
 extends Control
 
+const EconomyUtil = preload("res://game/scripts/economy.gd")
+
+@onready var state: Node = get_node("/root/GameState")
 @onready var campaign_button: Button = $CenterPanel/Layout/CampaignButton
 @onready var sandbox_button: Button = $CenterPanel/Layout/SandboxButton
 @onready var settings_button: Button = $CenterPanel/Layout/SettingsButton
@@ -23,30 +26,30 @@ func _ready() -> void:
 
 
 func _refresh_ui() -> void:
-	max_wave_label.text = "Max Wave Reached: %d" % GameState.max_wave_reached
-	high_score_label.text = "High Gold: %s" % Economy.format_short(GameState.high_gold)
-	renown_label.text = "Renown Points: %d" % GameState.renown_points
+	max_wave_label.text = "Max Wave Reached: %d" % state.max_wave_reached
+	high_score_label.text = "High Gold: %s" % EconomyUtil.format_short(state.high_gold)
+	renown_label.text = "Renown Points: %d" % state.renown_points
 
-	sandbox_button.disabled = not GameState.has_prestiged_once
+	sandbox_button.disabled = not state.has_prestiged_once
 	if sandbox_button.disabled:
 		sandbox_button.text = "Sandbox (Unlock after first Prestige)"
 	else:
 		sandbox_button.text = "Sandbox"
 
-	fps_slider.set_value_no_signal(float(GameState.fps_limit))
+	fps_slider.set_value_no_signal(float(state.fps_limit))
 	_update_fps_label()
 	settings_panel.visible = false
 
 
 func _on_campaign_pressed() -> void:
-	GameState.set_pending_mode("campaign")
+	state.set_pending_mode("campaign")
 	get_tree().change_scene_to_file("res://game/scenes/battle_scene.tscn")
 
 
 func _on_sandbox_pressed() -> void:
 	if sandbox_button.disabled:
 		return
-	GameState.set_pending_mode("sandbox")
+	state.set_pending_mode("sandbox")
 	get_tree().change_scene_to_file("res://game/scenes/battle_scene.tscn")
 
 
@@ -59,7 +62,7 @@ func _on_close_settings_pressed() -> void:
 
 
 func _on_fps_slider_changed(value: float) -> void:
-	GameState.set_fps_limit(int(value))
+	state.set_fps_limit(int(value))
 	_update_fps_label()
 
 

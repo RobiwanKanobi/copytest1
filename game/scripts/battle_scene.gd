@@ -1,9 +1,15 @@
 extends Node2D
 
+const Balance = preload("res://game/data/balance.gd")
+const Economy = preload("res://game/scripts/economy.gd")
+const WaveManager = preload("res://game/scripts/wave_manager.gd")
+const Upgrades = preload("res://game/scripts/upgrades.gd")
+
 const PLAYER_UNIT_SCRIPT := preload("res://game/entities/player_unit.gd")
 const ENEMY_UNIT_SCRIPT := preload("res://game/entities/enemy_unit.gd")
 const PROJECTILE_SCRIPT := preload("res://game/entities/projectile.gd")
 
+@onready var state: Node = get_node("/root/GameState")
 @onready var enemy_core_rect: ColorRect = $Battlefield/EnemyCore
 @onready var player_units_root: Node2D = $Battlefield/PlayerUnits
 @onready var enemy_units_root: Node2D = $Battlefield/EnemyUnits
@@ -57,7 +63,7 @@ var recruit_counts := {
 	"knight": 0
 }
 
-var upgrades: Upgrades = Upgrades.new()
+var upgrades = Upgrades.new()
 
 var player_units: Array = []
 var enemy_units: Array = []
@@ -70,7 +76,7 @@ var save_sync_timer: float = 0.0
 
 func _ready() -> void:
 	randomize()
-	mode = GameState.pending_mode
+	mode = state.pending_mode
 
 	enemy_core_rect.position = Balance.CORE_POSITION
 	enemy_core_rect.size = Balance.CORE_SIZE
@@ -109,7 +115,7 @@ func _process(delta: float) -> void:
 		_update_ui(false)
 	if save_sync_timer >= 2.0:
 		save_sync_timer = 0.0
-		GameState.register_gold(gold)
+		state.register_gold(gold)
 
 
 func _connect_buttons() -> void:
@@ -140,7 +146,7 @@ func _setup_tabs() -> void:
 
 func _start_campaign_wave(wave: int) -> void:
 	current_wave = wave
-	GameState.register_wave(current_wave)
+	state.register_wave(current_wave)
 
 	current_wave_data = WaveManager.get_campaign_wave_data(current_wave)
 	wave_name = str(current_wave_data.get("name", "Frontline"))
@@ -265,7 +271,8 @@ func _build_player_stats(kind: String) -> Dictionary:
 	var base_damage := float(base.get("base_damage", 1.0))
 	var base_hp := float(base.get("base_hp", 10.0))
 	var base_speed := float(base.get("base_speed", 75.0))
-	var total_damage := (base_damage + upgrades.get_damage_add()) * GameState.get_renown_multiplier()
+	var renown_multiplier: float = float(state.get_renown_multiplier())
+	var total_damage: float = (base_damage + upgrades.get_damage_add()) * renown_multiplier
 	var total_hp := maxf(1.0, base_hp + upgrades.get_health_add())
 	var total_speed := maxf(1.0, base_speed + upgrades.get_speed_add())
 
@@ -301,8 +308,8 @@ func _get_recruit_cost(kind: String) -> int:
 
 func _is_unit_unlocked(kind: String) -> bool:
 	var def: Dictionary = Balance.UNIT_DEFS.get(kind, {})
-	var unlock_wave := int(def.get("unlock_wave", 1))
-	var effective_wave := max(current_wave, GameState.max_wave_reached)
+	var unlock_wave: int = int(def.get("unlock_wave", 1))
+	var effective_wave: int = maxi(current_wave, state.max_wave_reached)
 	return effective_wave >= unlock_wave
 
 
@@ -387,7 +394,7 @@ func _prune_dead_references() -> void:
 
 
 func add_gold(raw_amount: float) -> void:
-	gold += raw_amount * GameState.get_renown_multiplier()
+	gold += raw_amount * state.get_renown_multiplier()
 
 
 func damage_enemy_core(amount: float) -> void:
@@ -574,11 +581,11 @@ func _update_prestige_tab_ui() -> void:
 	var requirement_text := "Requirement: Reach Wave %d or %s Gold" % [Balance.PRESTIGE_REQUIRED_WAVE, Economy.format_short(Balance.PRESTIGE_REQUIRED_GOLD)]
 	prestige_info_label.text = "%s\nCurrent: Wave %d, Gold %s" % [requirement_text, current_wave, Economy.format_short(gold)]
 
-	var projected_gain := Economy.calculate_prestige_gain(max(current_wave, GameState.max_wave_reached), gold)
+	var projected_gain := Economy.calculate_prestige_gain(max(current_wave, state.max_wave_reached), gold)
 	claim_glory_button.text = "Claim Glory (+%d Renown)" % projected_gain
 	claim_glory_button.disabled = not _can_claim_glory()
 
-	var bonus_percent := int(round((GameState.get_renown_multiplier() - 1.0) * 100.0))
+	var bonus_percent := int(round((state.get_renown_multiplier() - 1.0) * 100.0))
 	renown_bonus_label.text = "Permanent Bonus: +%d%% Gold & Damage" % bonus_percent
 
 
@@ -642,16 +649,16 @@ func _on_claim_glory_pressed() -> void:
 	if not _can_claim_glory():
 		return
 
-	var renown_gain := Economy.calculate_prestige_gain(max(current_wave, GameState.max_wave_reached), gold)
-	GameState.grant_prestige(renown_gain)
+	var renown_gain := Economy.calculate_prestige_gain(max(current_wave, state.max_wave_reached), gold)
+	state.grant_prestige(renown_gain)
 	_reset_run_after_prestige()
 	mode = "campaign"
-	GameState.set_pending_mode("campaign")
+	state.set_pending_mode("campaign")
 	_start_campaign_wave(1)
 	_update_ui(true)
 
 
 func _on_back_to_menu_pressed() -> void:
-	GameState.register_gold(gold)
-	GameState.save()
+	state.register_gold(gold)
+	state.save()
 	get_tree().change_scene_to_file("res://game/scenes/main_menu.tscn")

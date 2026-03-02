@@ -1,6 +1,7 @@
 extends Node
 
 const SAVE_PATH := "user://save_game.json"
+const BalanceData = preload("res://game/data/balance.gd")
 
 var max_wave_reached: int = 1
 var high_gold: float = 0.0
@@ -38,7 +39,7 @@ func set_fps_limit(value: int) -> void:
 
 
 func get_renown_multiplier() -> float:
-	return 1.0 + float(renown_points) * Balance.RENOWN_BONUS_PER_POINT
+	return 1.0 + float(renown_points) * BalanceData.RENOWN_BONUS_PER_POINT
 
 
 func grant_prestige(renown_gain: int) -> void:
