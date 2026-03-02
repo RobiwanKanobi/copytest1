@@ -6,10 +6,11 @@ const BalanceData = preload("res://game/data/balance.gd")
 
 static func get_campaign_wave_data(wave: int) -> Dictionary:
 	var difficulty := maxf(1.0, float(wave))
+	var enemy_count := 2 + maxi(0, wave - 1) * 3
 	return {
 		"wave": wave,
 		"name": BalanceData.get_wave_name(wave),
-		"enemy_count": 8 + wave * 3,
+		"enemy_count": enemy_count,
 		"enemy_max_hp": 8.0 + difficulty * 2.4,
 		"enemy_damage": 1.2 + difficulty * 0.22,
 		"enemy_speed": 52.0 + minf(difficulty * 1.3, 40.0),

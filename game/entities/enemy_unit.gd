@@ -36,16 +36,14 @@ func _process(delta: float) -> void:
 	_cooldown_left = maxf(0.0, _cooldown_left - delta)
 	position += battle.get_enemy_push(self) * delta
 
-	var target = battle.get_nearest_player(position, attack_range)
-	if target != null:
-		if position.distance_to(target.position) > attack_range * 0.8:
-			position = position.move_toward(target.position, move_speed * delta)
-		_try_attack(target)
+	var target = battle.get_nearest_player(position)
+	if target == null:
 		return
 
-	var left_target := Vector2(24.0, position.y)
-	position = position.move_toward(left_target, move_speed * delta)
-	position.y = clampf(position.y, 20.0, 430.0)
+	if position.distance_to(target.position) > attack_range * 0.8:
+		position = position.move_toward(target.position, move_speed * delta)
+		position.y = clampf(position.y, 20.0, 430.0)
+	_try_attack(target)
 
 
 func take_damage(amount: float) -> void:

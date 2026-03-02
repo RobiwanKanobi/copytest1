@@ -50,17 +50,14 @@ func _process(delta: float) -> void:
 	var push: Vector2 = battle.get_player_push(self)
 	position += push * delta
 
-	var target = battle.get_nearest_enemy(position, attack_range)
-	if target != null:
-		if not is_ranged and position.distance_to(target.position) > attack_range * 0.8:
-			_move_toward(target.position, delta)
-		_try_attack_enemy(target)
+	var target = battle.get_nearest_enemy(position)
+	if target == null:
 		return
 
-	if battle.enemy_core_hp > 0.0 and position.distance_to(battle.get_core_target_position()) <= attack_range:
-		_try_attack_core()
-	else:
-		_move_toward(battle.get_core_target_position(), delta)
+	var distance_to_target := position.distance_to(target.position)
+	if distance_to_target > attack_range * 0.8:
+		_move_toward(target.position, delta)
+	_try_attack_enemy(target)
 
 
 func take_damage(amount: float) -> void:
@@ -83,13 +80,6 @@ func _try_attack_enemy(target: Node2D) -> void:
 	else:
 		if target.has_method("take_damage"):
 			target.take_damage(damage)
-
-
-func _try_attack_core() -> void:
-	if _cooldown_left > 0.0:
-		return
-	_cooldown_left = attack_cooldown
-	battle.damage_enemy_core(damage)
 
 
 func _die() -> void:

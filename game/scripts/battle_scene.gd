@@ -50,6 +50,7 @@ var wave_name: String = ""
 var current_wave_data: Dictionary = {}
 var wave_enemy_spawn_total: int = 0
 var wave_enemy_spawned: int = 0
+var wave_enemy_killed: int = 0
 var wave_spawn_interval: float = 0.7
 var wave_spawn_timer: float = 0.0
 var sandbox_elapsed: float = 0.0
@@ -81,6 +82,8 @@ func _ready() -> void:
 	enemy_core_rect.position = Balance.CORE_POSITION
 	enemy_core_rect.size = Balance.CORE_SIZE
 	enemy_core_rect.color = Color(0.85, 0.15, 0.15)
+	# Wave wins are now based on unit elimination, not core damage.
+	enemy_core_rect.visible = false
 
 	_connect_buttons()
 	_setup_tabs()
@@ -152,6 +155,7 @@ func _start_campaign_wave(wave: int) -> void:
 	wave_name = str(current_wave_data.get("name", "Frontline"))
 	wave_enemy_spawn_total = int(current_wave_data.get("enemy_count", 0))
 	wave_enemy_spawned = 0
+	wave_enemy_killed = 0
 	wave_spawn_interval = float(current_wave_data.get("spawn_interval", 0.8))
 	wave_spawn_timer = 0.15
 
@@ -166,6 +170,7 @@ func _start_sandbox_mode() -> void:
 	wave_name = "Sandbox"
 	wave_enemy_spawn_total = 0
 	wave_enemy_spawned = 0
+	wave_enemy_killed = 0
 	wave_spawn_interval = float(current_wave_data.get("spawn_interval", 0.25))
 	wave_spawn_timer = 0.1
 	enemy_core_max_hp = 1.0
@@ -194,7 +199,9 @@ func _handle_enemy_spawning(delta: float) -> void:
 func _handle_campaign_wave_clear() -> void:
 	if mode != "campaign":
 		return
-	if enemy_core_hp > 0.0:
+	if wave_enemy_spawned < wave_enemy_spawn_total:
+		return
+	if not enemy_units.is_empty():
 		return
 	_clear_enemy_units()
 	_start_campaign_wave(current_wave + 1)
@@ -421,13 +428,15 @@ func on_player_unit_died(unit: Node) -> void:
 
 func on_enemy_unit_died(unit: Node, base_reward: float) -> void:
 	enemy_units.erase(unit)
+	if mode == "campaign":
+		wave_enemy_killed = mini(wave_enemy_spawn_total, wave_enemy_killed + 1)
 	if base_reward > 0.0:
 		add_gold(base_reward * upgrades.get_gold_reward_multiplier())
 
 
-func get_nearest_enemy(from_pos: Vector2, range_limit: float):
-	var nearest = null
-	var best_dist_sq := range_limit * range_limit
+func get_nearest_enemy(from_pos: Vector2, range_limit: float = -1.0):
+	var nearest: Node2D = null
+	var best_dist_sq: float = INF if range_limit <= 0.0 else range_limit * range_limit
 	for enemy in enemy_units:
 		if not is_instance_valid(enemy):
 			continue
@@ -438,9 +447,9 @@ func get_nearest_enemy(from_pos: Vector2, range_limit: float):
 	return nearest
 
 
-func get_nearest_player(from_pos: Vector2, range_limit: float):
-	var nearest = null
-	var best_dist_sq := range_limit * range_limit
+func get_nearest_player(from_pos: Vector2, range_limit: float = -1.0):
+	var nearest: Node2D = null
+	var best_dist_sq: float = INF if range_limit <= 0.0 else range_limit * range_limit
 	for unit in player_units:
 		if not is_instance_valid(unit):
 			continue
@@ -493,7 +502,10 @@ func _update_ui(_force: bool) -> void:
 
 	if mode == "campaign":
 		wave_label.text = "Wave %d - %s" % [current_wave, wave_name]
-		wave_progress.value = (enemy_core_hp / maxf(1.0, enemy_core_max_hp)) * 100.0
+		if wave_enemy_spawn_total > 0:
+			wave_progress.value = (float(wave_enemy_killed) / float(wave_enemy_spawn_total)) * 100.0
+		else:
+			wave_progress.value = 0.0
 	else:
 		var stage := int(current_wave_data.get("wave", 1))
 		wave_label.text = "Sandbox Stage %d" % stage
