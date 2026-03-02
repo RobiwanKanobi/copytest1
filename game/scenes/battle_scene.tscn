@@ -1,0 +1,166 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/scripts/battle_scene.gd" id="1_battle"]
+
+[node name="BattleScene" type="Node2D"]
+script = ExtResource("1_battle")
+
+[node name="Battlefield" type="Node2D" parent="."]
+
+[node name="BattlefieldBG" type="ColorRect" parent="Battlefield"]
+offset_right = 1152.0
+offset_bottom = 454.0
+color = Color(0.16, 0.16, 0.18, 1)
+
+[node name="EnemyCore" type="ColorRect" parent="Battlefield"]
+offset_left = 1070.0
+offset_top = 360.0
+offset_right = 1140.0
+offset_bottom = 480.0
+color = Color(0.85, 0.15, 0.15, 1)
+
+[node name="PlayerUnits" type="Node2D" parent="Battlefield"]
+
+[node name="EnemyUnits" type="Node2D" parent="Battlefield"]
+
+[node name="Projectiles" type="Node2D" parent="Battlefield"]
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="TopHUD" type="Panel" parent="UI"]
+offset_right = 1152.0
+offset_bottom = 72.0
+
+[node name="Layout" type="VBoxContainer" parent="UI/TopHUD"]
+offset_left = 16.0
+offset_top = 8.0
+offset_right = 1136.0
+offset_bottom = 64.0
+theme_override_constants/separation = 6
+
+[node name="InfoRow" type="HBoxContainer" parent="UI/TopHUD/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="GoldLabel" type="Label" parent="UI/TopHUD/Layout/InfoRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Gold: 0"
+
+[node name="UnitCountLabel" type="Label" parent="UI/TopHUD/Layout/InfoRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Units: 0 / 10,000"
+
+[node name="WaveLabel" type="Label" parent="UI/TopHUD/Layout/InfoRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Wave 1 - Roman Outpost"
+
+[node name="WaveProgress" type="ProgressBar" parent="UI/TopHUD/Layout"]
+layout_mode = 2
+value = 100.0
+show_percentage = false
+
+[node name="BackToMenuButton" type="Button" parent="UI"]
+offset_left = 1008.0
+offset_top = 22.0
+offset_right = 1134.0
+offset_bottom = 58.0
+text = "Main Menu"
+
+[node name="Footer" type="Panel" parent="UI"]
+offset_top = 454.0
+offset_right = 1152.0
+offset_bottom = 648.0
+
+[node name="Tabs" type="TabContainer" parent="UI/Footer"]
+offset_left = 12.0
+offset_top = 10.0
+offset_right = 1140.0
+offset_bottom = 186.0
+
+[node name="Units" type="VBoxContainer" parent="UI/Footer/Tabs"]
+layout_mode = 2
+
+[node name="Layout" type="VBoxContainer" parent="UI/Footer/Tabs/Units"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="RecruitLancerButton" type="Button" parent="UI/Footer/Tabs/Units/Layout"]
+layout_mode = 2
+text = "Recruit Lancer"
+
+[node name="RecruitArcherButton" type="Button" parent="UI/Footer/Tabs/Units/Layout"]
+layout_mode = 2
+text = "Recruit Archer"
+
+[node name="RecruitKnightButton" type="Button" parent="UI/Footer/Tabs/Units/Layout"]
+layout_mode = 2
+text = "Recruit Knight"
+
+[node name="IndividualUpgrades" type="VBoxContainer" parent="UI/Footer/Tabs"]
+layout_mode = 2
+
+[node name="Layout" type="VBoxContainer" parent="UI/Footer/Tabs/IndividualUpgrades"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SharpenBladesButton" type="Button" parent="UI/Footer/Tabs/IndividualUpgrades/Layout"]
+layout_mode = 2
+text = "Sharpen Blades"
+
+[node name="PlateArmorButton" type="Button" parent="UI/Footer/Tabs/IndividualUpgrades/Layout"]
+layout_mode = 2
+text = "Plate Armor"
+
+[node name="MarchingDrillButton" type="Button" parent="UI/Footer/Tabs/IndividualUpgrades/Layout"]
+layout_mode = 2
+text = "Marching Drill"
+
+[node name="GlobalUpgrades" type="VBoxContainer" parent="UI/Footer/Tabs"]
+layout_mode = 2
+
+[node name="Layout" type="VBoxContainer" parent="UI/Footer/Tabs/GlobalUpgrades"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="AutoClickerButton" type="Button" parent="UI/Footer/Tabs/GlobalUpgrades/Layout"]
+layout_mode = 2
+text = "Auto-Clicker"
+
+[node name="RecruitmentTentButton" type="Button" parent="UI/Footer/Tabs/GlobalUpgrades/Layout"]
+layout_mode = 2
+text = "Recruitment Tent"
+
+[node name="GoldMultiplierButton" type="Button" parent="UI/Footer/Tabs/GlobalUpgrades/Layout"]
+layout_mode = 2
+text = "Gold Multiplier"
+
+[node name="UnitDamageGlobalButton" type="Button" parent="UI/Footer/Tabs/GlobalUpgrades/Layout"]
+layout_mode = 2
+text = "Unit Damage"
+
+[node name="UnitHealthGlobalButton" type="Button" parent="UI/Footer/Tabs/GlobalUpgrades/Layout"]
+layout_mode = 2
+text = "Unit Health"
+
+[node name="Prestige" type="VBoxContainer" parent="UI/Footer/Tabs"]
+layout_mode = 2
+
+[node name="Layout" type="VBoxContainer" parent="UI/Footer/Tabs/Prestige"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PrestigeInfoLabel" type="Label" parent="UI/Footer/Tabs/Prestige/Layout"]
+layout_mode = 2
+text = "Requirement: Reach Wave 50 or 1B Gold"
+autowrap_mode = 3
+
+[node name="RenownBonusLabel" type="Label" parent="UI/Footer/Tabs/Prestige/Layout"]
+layout_mode = 2
+text = "Permanent Bonus: +0% Gold & Damage"
+
+[node name="ClaimGloryButton" type="Button" parent="UI/Footer/Tabs/Prestige/Layout"]
+layout_mode = 2
+text = "Claim Glory"

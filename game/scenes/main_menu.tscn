@@ -1,0 +1,121 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/scripts/main_menu.gd" id="1_menu"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12, 0.11, 0.13, 1)
+
+[node name="CenterPanel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -180.0
+offset_right = 250.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Layout" type="VBoxContainer" parent="CenterPanel"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 476.0
+offset_bottom = 342.0
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="CenterPanel/Layout"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "BATTLE IDLE"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="CenterPanel/Layout"]
+layout_mode = 2
+text = "Minimalist battlefield prototype"
+horizontal_alignment = 1
+
+[node name="MaxWaveLabel" type="Label" parent="CenterPanel/Layout"]
+layout_mode = 2
+text = "Max Wave Reached: 1"
+
+[node name="HighScoreLabel" type="Label" parent="CenterPanel/Layout"]
+layout_mode = 2
+text = "High Gold: 0"
+
+[node name="RenownLabel" type="Label" parent="CenterPanel/Layout"]
+layout_mode = 2
+text = "Renown Points: 0"
+
+[node name="CampaignButton" type="Button" parent="CenterPanel/Layout"]
+layout_mode = 2
+text = "Campaign"
+
+[node name="SandboxButton" type="Button" parent="CenterPanel/Layout"]
+layout_mode = 2
+text = "Sandbox (Unlock after first Prestige)"
+
+[node name="SettingsButton" type="Button" parent="CenterPanel/Layout"]
+layout_mode = 2
+text = "Settings"
+
+[node name="SettingsPanel" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 300.0
+offset_top = -240.0
+offset_right = 620.0
+offset_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="Layout" type="VBoxContainer" parent="SettingsPanel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 14.0
+offset_right = 302.0
+offset_bottom = 206.0
+theme_override_constants/separation = 8
+
+[node name="SettingsLabel" type="Label" parent="SettingsPanel/Layout"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Settings"
+
+[node name="FpsSlider" type="HSlider" parent="SettingsPanel/Layout"]
+layout_mode = 2
+min_value = 30.0
+max_value = 240.0
+step = 10.0
+value = 120.0
+
+[node name="FpsValueLabel" type="Label" parent="SettingsPanel/Layout"]
+layout_mode = 2
+text = "FPS Limit: 120"
+
+[node name="CloseSettingsButton" type="Button" parent="SettingsPanel/Layout"]
+layout_mode = 2
+text = "Close"
