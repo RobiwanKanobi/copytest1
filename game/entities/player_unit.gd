@@ -17,6 +17,7 @@ var _cooldown_left: float = 0.0
 
 func setup(stats: Dictionary, battle_ref: Node) -> void:
 	battle = battle_ref
+	add_to_group("player_unit")
 	refresh_stats(stats, false)
 
 
@@ -49,7 +50,7 @@ func _process(delta: float) -> void:
 	var push := battle.get_player_push(self)
 	position += push * delta
 
-	var target: EnemyUnit = battle.get_nearest_enemy(position, attack_range)
+	var target = battle.get_nearest_enemy(position, attack_range)
 	if target != null:
 		if not is_ranged and position.distance_to(target.position) > attack_range * 0.8:
 			_move_toward(target.position, delta)
@@ -73,14 +74,15 @@ func _move_toward(target_pos: Vector2, delta: float) -> void:
 	position.y = clampf(position.y, 20.0, 430.0)
 
 
-func _try_attack_enemy(target: EnemyUnit) -> void:
+func _try_attack_enemy(target: Node2D) -> void:
 	if _cooldown_left > 0.0:
 		return
 	_cooldown_left = attack_cooldown
 	if is_ranged:
 		battle.spawn_projectile(position, target, damage, projectile_speed, true)
 	else:
-		target.take_damage(damage)
+		if target.has_method("take_damage"):
+			target.take_damage(damage)
 
 
 func _try_attack_core() -> void:

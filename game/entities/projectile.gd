@@ -25,10 +25,10 @@ func _process(delta: float) -> void:
 
 	position = position.move_toward(target.position, speed * delta)
 	if position.distance_to(target.position) <= 7.0:
-		if from_player and target is EnemyUnit:
-			(target as EnemyUnit).take_damage(damage)
-		elif not from_player and target is PlayerUnit:
-			(target as PlayerUnit).take_damage(damage)
+		if from_player and target.is_in_group("enemy_unit") and target.has_method("take_damage"):
+			target.take_damage(damage)
+		elif not from_player and target.is_in_group("player_unit") and target.has_method("take_damage"):
+			target.take_damage(damage)
 		queue_free()
 
 

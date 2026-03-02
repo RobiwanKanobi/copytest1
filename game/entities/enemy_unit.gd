@@ -22,6 +22,7 @@ func setup(stats: Dictionary, battle_ref: Node) -> void:
 	attack_cooldown = float(stats.get("attack_cooldown", 1.0))
 	gold_reward = float(stats.get("gold_reward", 5.0))
 	battle = battle_ref
+	add_to_group("enemy_unit")
 	queue_redraw()
 
 
@@ -35,7 +36,7 @@ func _process(delta: float) -> void:
 	_cooldown_left = maxf(0.0, _cooldown_left - delta)
 	position += battle.get_enemy_push(self) * delta
 
-	var target: PlayerUnit = battle.get_nearest_player(position, attack_range)
+	var target = battle.get_nearest_player(position, attack_range)
 	if target != null:
 		if position.distance_to(target.position) > attack_range * 0.8:
 			position = position.move_toward(target.position, move_speed * delta)
@@ -53,11 +54,12 @@ func take_damage(amount: float) -> void:
 		_die(true)
 
 
-func _try_attack(target: PlayerUnit) -> void:
+func _try_attack(target: Node2D) -> void:
 	if _cooldown_left > 0.0:
 		return
 	_cooldown_left = attack_cooldown
-	target.take_damage(damage)
+	if target.has_method("take_damage"):
+		target.take_damage(damage)
 
 
 func _die(grant_gold: bool) -> void:

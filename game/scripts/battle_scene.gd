@@ -1,5 +1,9 @@
 extends Node2D
 
+const PLAYER_UNIT_SCRIPT := preload("res://game/entities/player_unit.gd")
+const ENEMY_UNIT_SCRIPT := preload("res://game/entities/enemy_unit.gd")
+const PROJECTILE_SCRIPT := preload("res://game/entities/projectile.gd")
+
 @onready var enemy_core_rect: ColorRect = $Battlefield/EnemyCore
 @onready var player_units_root: Node2D = $Battlefield/PlayerUnits
 @onready var enemy_units_root: Node2D = $Battlefield/EnemyUnits
@@ -55,9 +59,9 @@ var recruit_counts := {
 
 var upgrades: Upgrades = Upgrades.new()
 
-var player_units: Array[PlayerUnit] = []
-var enemy_units: Array[EnemyUnit] = []
-var projectiles: Array[Projectile] = []
+var player_units: Array = []
+var enemy_units: Array = []
+var projectiles: Array = []
 
 var auto_recruit_timer: float = 0.0
 var ui_refresh_timer: float = 0.0
@@ -214,7 +218,7 @@ func _spawn_enemy_from_wave_data(data: Dictionary) -> bool:
 	if get_total_active_units() >= Balance.ENGINE_UNIT_LIMIT:
 		return false
 
-	var enemy := EnemyUnit.new()
+	var enemy = ENEMY_UNIT_SCRIPT.new()
 	enemy.position = Balance.ENEMY_SPAWN_POINT + Vector2(randf_range(-18.0, 0.0), randf_range(-80.0, 80.0))
 	enemy.setup(
 		{
@@ -246,7 +250,7 @@ func _try_recruit(kind: String, free_spawn: bool = false, refresh_ui: bool = tru
 		gold -= float(cost)
 
 	recruit_counts[kind] = int(recruit_counts.get(kind, 0)) + 1
-	var unit := PlayerUnit.new()
+	var unit = PLAYER_UNIT_SCRIPT.new()
 	unit.position = Balance.RALLY_POINT + Vector2(randf_range(0.0, 18.0), randf_range(-70.0, 70.0))
 	unit.setup(_build_player_stats(kind), self)
 	player_units_root.add_child(unit)
@@ -363,19 +367,19 @@ func _clear_all_units() -> void:
 
 
 func _prune_dead_references() -> void:
-	var live_players: Array[PlayerUnit] = []
+	var live_players: Array = []
 	for unit in player_units:
 		if is_instance_valid(unit):
 			live_players.append(unit)
 	player_units = live_players
 
-	var live_enemies: Array[EnemyUnit] = []
+	var live_enemies: Array = []
 	for enemy in enemy_units:
 		if is_instance_valid(enemy):
 			live_enemies.append(enemy)
 	enemy_units = live_enemies
 
-	var live_projectiles: Array[Projectile] = []
+	var live_projectiles: Array = []
 	for projectile in projectiles:
 		if is_instance_valid(projectile):
 			live_projectiles.append(projectile)
@@ -398,24 +402,24 @@ func damage_enemy_core(amount: float) -> void:
 func spawn_projectile(start_pos: Vector2, target: Node2D, damage: float, speed: float, from_player: bool) -> void:
 	if target == null or not is_instance_valid(target) or speed <= 0.0:
 		return
-	var projectile := Projectile.new()
+	var projectile = PROJECTILE_SCRIPT.new()
 	projectile.setup(start_pos, target, damage, speed, from_player, self)
 	projectiles_root.add_child(projectile)
 	projectiles.append(projectile)
 
 
-func on_player_unit_died(unit: PlayerUnit) -> void:
+func on_player_unit_died(unit: Node) -> void:
 	player_units.erase(unit)
 
 
-func on_enemy_unit_died(unit: EnemyUnit, base_reward: float) -> void:
+func on_enemy_unit_died(unit: Node, base_reward: float) -> void:
 	enemy_units.erase(unit)
 	if base_reward > 0.0:
 		add_gold(base_reward * upgrades.get_gold_reward_multiplier())
 
 
-func get_nearest_enemy(from_pos: Vector2, range_limit: float) -> EnemyUnit:
-	var nearest: EnemyUnit = null
+func get_nearest_enemy(from_pos: Vector2, range_limit: float):
+	var nearest = null
 	var best_dist_sq := range_limit * range_limit
 	for enemy in enemy_units:
 		if not is_instance_valid(enemy):
@@ -427,8 +431,8 @@ func get_nearest_enemy(from_pos: Vector2, range_limit: float) -> EnemyUnit:
 	return nearest
 
 
-func get_nearest_player(from_pos: Vector2, range_limit: float) -> PlayerUnit:
-	var nearest: PlayerUnit = null
+func get_nearest_player(from_pos: Vector2, range_limit: float):
+	var nearest = null
 	var best_dist_sq := range_limit * range_limit
 	for unit in player_units:
 		if not is_instance_valid(unit):
@@ -444,11 +448,11 @@ func get_core_target_position() -> Vector2:
 	return Balance.CORE_POSITION + Vector2(6.0, Balance.CORE_SIZE.y * 0.5)
 
 
-func get_player_push(unit: PlayerUnit) -> Vector2:
+func get_player_push(unit: Node2D) -> Vector2:
 	return _compute_push_vector(unit, player_units, 13.0, 70)
 
 
-func get_enemy_push(unit: EnemyUnit) -> Vector2:
+func get_enemy_push(unit: Node2D) -> Vector2:
 	return _compute_push_vector(unit, enemy_units, 13.0, 70)
 
 
