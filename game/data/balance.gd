@@ -6,9 +6,9 @@ const PRESTIGE_REQUIRED_WAVE: int = 50
 const PRESTIGE_REQUIRED_GOLD: float = 1_000_000_000.0
 const RENOWN_BONUS_PER_POINT: float = 0.10
 
-const RALLY_POINT: Vector2 = Vector2(0, 420)
-const ENEMY_SPAWN_POINT: Vector2 = Vector2(1110, 420)
-const CORE_POSITION: Vector2 = Vector2(1082, 320)
+const RALLY_POINT: Vector2 = Vector2(0, 227)
+const ENEMY_SPAWN_POINT: Vector2 = Vector2(1110, 227)
+const CORE_POSITION: Vector2 = Vector2(1082, 167)
 const CORE_SIZE: Vector2 = Vector2(70, 120)
 
 const UNIT_DEFS := {

@@ -11,6 +11,7 @@ extends Node2D
 @onready var wave_progress: ProgressBar = $UI/TopHUD/Layout/WaveProgress
 
 @onready var tabs: TabContainer = $UI/Footer/Tabs
+@onready var army_summary_label: Label = $UI/Footer/Tabs/Units/Layout/ArmySummaryLabel
 @onready var recruit_lancer_button: Button = $UI/Footer/Tabs/Units/Layout/RecruitLancerButton
 @onready var recruit_archer_button: Button = $UI/Footer/Tabs/Units/Layout/RecruitArcherButton
 @onready var recruit_knight_button: Button = $UI/Footer/Tabs/Units/Layout/RecruitKnightButton
@@ -214,7 +215,7 @@ func _spawn_enemy_from_wave_data(data: Dictionary) -> bool:
 		return false
 
 	var enemy := EnemyUnit.new()
-	enemy.position = Balance.ENEMY_SPAWN_POINT + Vector2(randf_range(-20.0, 20.0), randf_range(-160.0, 20.0))
+	enemy.position = Balance.ENEMY_SPAWN_POINT + Vector2(randf_range(-18.0, 0.0), randf_range(-80.0, 80.0))
 	enemy.setup(
 		{
 			"max_hp": float(data.get("enemy_max_hp", 10.0)),
@@ -246,7 +247,7 @@ func _try_recruit(kind: String, free_spawn: bool = false, refresh_ui: bool = tru
 
 	recruit_counts[kind] = int(recruit_counts.get(kind, 0)) + 1
 	var unit := PlayerUnit.new()
-	unit.position = Balance.RALLY_POINT + Vector2(randf_range(0.0, 8.0), randf_range(-30.0, 14.0))
+	unit.position = Balance.RALLY_POINT + Vector2(randf_range(0.0, 18.0), randf_range(-70.0, 70.0))
 	unit.setup(_build_player_stats(kind), self)
 	player_units_root.add_child(unit)
 	player_units.append(unit)
@@ -499,6 +500,13 @@ func _update_units_tab_ui() -> void:
 	var archer_cost := _get_recruit_cost("archer")
 	var knight_cost := _get_recruit_cost("knight")
 	var active_cap_reached := get_total_active_units() >= Balance.ENGINE_UNIT_LIMIT
+
+	army_summary_label.text = "Army: %d active | Lancer %d | Archer %d | Knight %d" % [
+		player_units.size(),
+		int(recruit_counts.get("lancer", 0)),
+		int(recruit_counts.get("archer", 0)),
+		int(recruit_counts.get("knight", 0))
+	]
 
 	recruit_lancer_button.text = "Recruit Lancer (%s)" % Economy.format_short(lancer_cost)
 	recruit_archer_button.text = "Recruit Archer (%s)" % Economy.format_short(archer_cost)

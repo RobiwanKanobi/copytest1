@@ -97,7 +97,7 @@ func _die() -> void:
 
 
 func _draw() -> void:
-	draw_rect(Rect2(Vector2(-6.0, -6.0), Vector2(12.0, 12.0)), Color(0.25, 0.55, 1.0))
+	draw_rect(Rect2(Vector2(-9.0, -9.0), Vector2(18.0, 18.0)), Color(0.25, 0.55, 1.0))
 	var hp_ratio := 0.0 if max_hp <= 0.0 else clampf(hp / max_hp, 0.0, 1.0)
-	draw_rect(Rect2(Vector2(-6.0, -10.0), Vector2(12.0, 2.0)), Color(0.2, 0.2, 0.2))
-	draw_rect(Rect2(Vector2(-6.0, -10.0), Vector2(12.0 * hp_ratio, 2.0)), Color(0.4, 1.0, 0.4))
+	draw_rect(Rect2(Vector2(-9.0, -13.0), Vector2(18.0, 3.0)), Color(0.2, 0.2, 0.2))
+	draw_rect(Rect2(Vector2(-9.0, -13.0), Vector2(18.0 * hp_ratio, 3.0)), Color(0.4, 1.0, 0.4))

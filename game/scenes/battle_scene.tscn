@@ -87,6 +87,10 @@ layout_mode = 2
 layout_mode = 2
 theme_override_constants/separation = 8
 
+[node name="ArmySummaryLabel" type="Label" parent="UI/Footer/Tabs/Units/Layout"]
+layout_mode = 2
+text = "Army: 0 units"
+
 [node name="RecruitLancerButton" type="Button" parent="UI/Footer/Tabs/Units/Layout"]
 layout_mode = 2
 text = "Recruit Lancer"
